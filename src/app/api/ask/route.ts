@@ -7,7 +7,12 @@ import { matchIntent, answerQuestion } from "@/lib/ai/llm";
 import { resolveIntent } from "@/lib/ai/curated";
 
 export async function POST(request: Request) {
-  let body: { question?: string; intent?: string; filters?: Record<string, string | string[]> };
+  let body: {
+    question?: string;
+    intent?: string;
+    filters?: Record<string, string | string[]>;
+    mode?: "llm" | "engine" | "auto";
+  };
   try {
     body = await request.json();
   } catch {
@@ -36,7 +41,8 @@ export async function POST(request: Request) {
   }
 
   const hinted = matchIntent(question);
-  const result = await answerQuestion(question, aiCtx);
+  const mode = body.mode ?? "auto";
+  const result = await answerQuestion(question, aiCtx, mode === "engine");
   return Response.json({
     ...result,
     intent: result.intent ?? hinted,

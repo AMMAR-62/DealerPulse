@@ -25,7 +25,10 @@ interface Message {
 
 interface ChatPanelProps {
   initialQuestion?: string;
+  llmEnabled?: boolean;
 }
+
+type AnswerMode = "llm" | "engine";
 
 function currentParams(): Record<string, string | string[]> {
   if (typeof window === "undefined") return {};
@@ -35,12 +38,16 @@ function currentParams(): Record<string, string | string[]> {
   return out;
 }
 
-export default function ChatPanel({ initialQuestion }: ChatPanelProps) {
+export default function ChatPanel({
+  initialQuestion,
+  llmEnabled = false,
+}: ChatPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [busy, setBusy] = useState(false);
+  const [answerMode, setAnswerMode] = useState<AnswerMode>(llmEnabled ? "llm" : "engine");
   const [expanded, setExpanded] = useState<string | null>("Performance vs target");
   const bottomRef = useRef<HTMLDivElement>(null);
   const askedInitial = useRef(false);
@@ -78,6 +85,7 @@ export default function ChatPanel({ initialQuestion }: ChatPanelProps) {
         body: JSON.stringify({
           question: trimmed,
           intent: explicitIntent,
+          mode: answerMode,
           filters: currentParams(),
         }),
       });
@@ -169,7 +177,15 @@ export default function ChatPanel({ initialQuestion }: ChatPanelProps) {
       </div>
 
       <div className="lg:col-span-3">
-        <div className="flex h-[560px] flex-col rounded-lg border border-zinc-200 dark:border-zinc-800">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold">Assistant</h2>
+          <ModeToggle
+            value={answerMode}
+            llmEnabled={llmEnabled}
+            onChange={setAnswerMode}
+          />
+        </div>
+        <div className="flex h-[520px] flex-col rounded-lg border border-zinc-200 dark:border-zinc-800">
           <div className="flex-1 space-y-4 overflow-y-auto p-4">
             {messages.length === 0 && (
               <p className="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-500 dark:bg-zinc-900">
@@ -229,6 +245,57 @@ export default function ChatPanel({ initialQuestion }: ChatPanelProps) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ModeToggle({
+  value,
+  llmEnabled,
+  onChange,
+}: {
+  value: AnswerMode;
+  llmEnabled: boolean;
+  onChange: (m: AnswerMode) => void;
+}) {
+  return (
+    <div
+      className="flex overflow-hidden rounded-md border border-zinc-300 dark:border-zinc-700"
+      role="group"
+      aria-label="Answer mode"
+      title={
+        llmEnabled
+          ? "AI: LLM with grounded metrics · Engine: deterministic rule engine"
+          : "LLM unavailable — set OPENAI_API_KEY to enable AI mode"
+      }
+    >
+      <button
+        type="button"
+        onClick={() => onChange("engine")}
+        aria-pressed={value === "engine"}
+        disabled={!llmEnabled && value !== "engine" ? false : undefined}
+        className={`px-2.5 py-1 text-xs font-medium ${
+          value === "engine"
+            ? "bg-indigo-600 text-white"
+            : "bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        }`}
+      >
+        Engine
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("llm")}
+        aria-pressed={value === "llm"}
+        disabled={!llmEnabled}
+        title={!llmEnabled ? "Set OPENAI_API_KEY to enable AI mode" : undefined}
+        className={`px-2.5 py-1 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 ${
+          value === "llm"
+            ? "bg-indigo-600 text-white"
+            : "bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        }`}
+      >
+        AI
+      </button>
     </div>
   );
 }

@@ -14,15 +14,19 @@ export default async function AskPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">AI Assistant</h1>
-        <p className="text-sm text-zinc-500">
-          Answers are grounded in computed metrics, scoped to your filters
-          (as of {filters.asOf}){" "}
-          {isLlmConfigured() ? "· LLM mode active" : "· deterministic engine mode"}
-        </p>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">AI Assistant</h1>
+          <p className="text-sm text-zinc-500">
+            Answers are grounded in computed metrics, scoped to your filters
+            (as of {filters.asOf})
+          </p>
+        </div>
       </div>
-      <ChatPanel initialQuestion={initialQuestion} />
+      <ChatPanel
+        initialQuestion={initialQuestion}
+        llmEnabled={isLlmConfigured()}
+      />
     </div>
   );
 }

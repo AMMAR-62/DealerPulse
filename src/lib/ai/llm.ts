@@ -169,7 +169,7 @@ const KEYWORD_MAP: { intents: IntentKey[]; keywords: string[] }[] = [
   { intents: ["branch_target_pacing"], keywords: ["behind", "ahead", "target", "monthly unit"] },
   { intents: ["month_end_projection"], keywords: ["projected", "month-end", "month end", "best/expected", "worst", "attainment"] },
   { intents: ["branch_delivery_trend"], keywords: ["trend", "improving", "deteriorating", "flat"] },
-  { intents: ["top_reps"], keywords: ["closes the most", "most units", "best conversion", "top rep", "highest conversion"] },
+  { intents: ["top_reps"], keywords: ["closes the most", "most units", "best conversion", "top rep", "highest conversion", "best at conversion", "top performing"] },
   { intents: ["coaching_opportunity"], keywords: ["coaching", "high-volume", "low-converting", "high volume"] },
   { intents: ["stale_leads_by_rep"], keywords: ["stale", "unfollowed", "no follow-up", "no follow up", "follow-up"] },
   { intents: ["rep_peer_anomalies"], keywords: ["over- or under-perform", "over perform", "under perform", "anomaly", "peers"] },
