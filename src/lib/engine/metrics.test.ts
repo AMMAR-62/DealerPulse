@@ -4,8 +4,10 @@ import { defaultFilters } from "../store/filters";
 import {
   buildContext,
   computeConversion,
+  computeDeliveryDelays,
   computeFunnel,
   computeKpis,
+  computeLeadAging,
   computeLostByReason,
 } from "./metrics";
 
@@ -113,6 +115,46 @@ describe("buildContext scoping", () => {
     for (const lead of ctx.leads) {
       expect(lead.assigned_to).toBe(repId);
       expect(lead.branch_id).toBe(branchId);
+    }
+  });
+});
+
+describe("computeLeadAging", () => {
+  it("flags open leads with 7+ days without activity as stale", () => {
+    const aging = computeLeadAging(ctxAll().leads, "2025-12-31", 7);
+    const stale = aging.filter((a) => a.stale);
+    expect(stale.length).toBeGreaterThan(0);
+    for (const a of stale) {
+      expect(a.daysSinceActivity).toBeGreaterThan(7);
+      expect(["delivered", "lost"]).not.toContain(a.lead.status);
+    }
+    expect(aging[0].daysSinceActivity).toBeGreaterThanOrEqual(
+      aging[aging.length - 1].daysSinceActivity
+    );
+  });
+
+  it("does not flag delivered or lost leads as stale", () => {
+    const aging = computeLeadAging(ctxAll().leads, "2025-12-31", 7);
+    const closed = aging.filter(
+      (a) => a.lead.status === "delivered" || a.lead.status === "lost"
+    );
+    expect(closed.every((a) => !a.stale)).toBe(true);
+  });
+});
+
+describe("computeDeliveryDelays", () => {
+  it("partitions deliveries into on-time vs delayed with share-sorted reasons", () => {
+    const stats = computeDeliveryDelays(ctxAll());
+    expect(stats.totalDeliveries).toBe(160);
+    expect(stats.delayed + stats.onTime).toBe(160);
+    expect(stats.delayedRate).toBeCloseTo(stats.delayed / 160);
+    expect(stats.avgDaysToDeliver).toBeGreaterThan(0);
+    const totalShare = stats.breakdown.reduce((s, r) => s + r.share, 0);
+    expect(totalShare).toBeCloseTo(1, 1);
+    for (let i = 1; i < stats.breakdown.length; i++) {
+      expect(stats.breakdown[i - 1].count).toBeGreaterThanOrEqual(
+        stats.breakdown[i].count
+      );
     }
   });
 });

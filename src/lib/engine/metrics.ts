@@ -157,6 +157,47 @@ export interface FunnelBucket {
   share: number;
 }
 
+export interface DelayReasonRow {
+  reason: string;
+  count: number;
+  share: number;
+}
+
+export interface DeliveryDelayStats {
+  totalDeliveries: number;
+  delayed: number;
+  onTime: number;
+  delayedRate: number;
+  avgDaysToDeliver: number;
+  breakdown: DelayReasonRow[];
+}
+
+export function computeDeliveryDelays(ctx: FilteredContext): DeliveryDelayStats {
+  const { deliveries } = ctx;
+  const delayed = deliveries.filter((d) => Boolean(d.delay_reason));
+  const days = deliveries.map((d) => d.days_to_deliver).filter((n) => Number.isFinite(n));
+  const counts = new Map<string, number>();
+  for (const d of delayed) {
+    const reason = d.delay_reason?.trim() || "Unknown";
+    counts.set(reason, (counts.get(reason) ?? 0) + 1);
+  }
+  const breakdown = [...counts.entries()]
+    .map(([reason, count]) => ({
+      reason,
+      count,
+      share: delayed.length ? count / delayed.length : 0,
+    }))
+    .sort((a, b) => b.count - a.count);
+  return {
+    totalDeliveries: deliveries.length,
+    delayed: delayed.length,
+    onTime: deliveries.length - delayed.length,
+    delayedRate: deliveries.length ? delayed.length / deliveries.length : 0,
+    avgDaysToDeliver: days.length ? days.reduce((a, b) => a + b, 0) / days.length : 0,
+    breakdown,
+  };
+}
+
 export function computeFunnel(leads: Lead[]): FunnelBucket[] {
   const currentCounts = new Map<string, number>();
   const reachedCounts = new Map<string, number>();

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { DatasetIndex } from "@/lib/data/load";
 import type { FilteredContext } from "@/lib/engine/metrics";
 import {
@@ -7,11 +8,15 @@ import {
   computeLostByReason,
 } from "@/lib/engine/metrics";
 import { OPEN_STAGES } from "@/lib/data/types";
+import type { Lead } from "@/lib/data/types";
 import { buildQueryString, updateParam } from "@/lib/store/filters";
 import { daysBetween } from "@/lib/data/load";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { formatLakhCr, formatPercent } from "@/lib/format";
 import KpiCard from "@/components/KpiCard";
 import FunnelBars from "@/components/FunnelBars";
+import Breadcrumb from "@/components/Breadcrumb";
+import RepLeadsTable from "@/components/RepLeadsTable";
+import { LEAD_SORT_KEYS } from "@/lib/leadsSortKeys";
 
 export default async function RepDetail({
   index,
@@ -39,15 +44,47 @@ export default async function RepDetail({
 
   const funnel = computeFunnel(leads);
   const lostReasons = computeLostByReason(leads);
-  const aging = computeLeadAging(leads, ctx.filters.asOf, 14).slice(0, 8);
+  const agingFull = computeLeadAging(leads, ctx.filters.asOf, 14);
+  const aging = agingFull.slice(0, 8);
+  const agingMap = new Map(
+    agingFull.map((a) => [a.lead.id, { daysSinceActivity: a.daysSinceActivity, stale: a.stale }])
+  );
+  const branchNames: Record<string, string> = {};
+  for (const [id, b] of index.branchesById) branchNames[id] = b.name;
+  const deliveryById: Record<string, { daysToDeliver: number; delayReason?: string | null }> = {};
+  for (const d of deliveries) {
+    deliveryById[d.lead_id] = { daysToDeliver: d.days_to_deliver, delayReason: d.delay_reason };
+  }
   const lastActivity = leads.length
     ? leads.reduce((max, l) => (l.last_activity_at > max ? l.last_activity_at : max), "")
     : null;
 
   const backHref = `/reps${buildQueryString(updateParam(currentParams, "rep", []))}`;
 
+  const sortKey = (LEAD_SORT_KEYS as readonly string[]).includes(
+    String(currentParams?.sort ?? "")
+  )
+    ? String(currentParams?.sort)
+    : "created_at";
+  const sortDir = currentParams?.dir === "asc" ? "asc" : "desc";
+  const sortedLeads = [...leads].sort((a, b) => {
+    const av = a[sortKey as keyof Lead];
+    const bv = b[sortKey as keyof Lead];
+    const cmp =
+      typeof av === "number" && typeof bv === "number"
+        ? av - bv
+        : String(av).localeCompare(String(bv));
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
   return (
     <div>
+      <Breadcrumb
+        items={[
+          { label: "Reps", href: "/reps" },
+          { label: rep?.name ?? repId },
+        ]}
+      />
       <div className="mb-4 flex items-center gap-3">
         <Link
           href={backHref}
@@ -73,12 +110,36 @@ export default async function RepDetail({
         <KpiCard label="Delivered" value={delivered.length} />
         <KpiCard label="Lost" value={lost.length} />
         <KpiCard label="Avg days to deliver" value={avgDays.toFixed(1)} />
-        <KpiCard label="Pipeline value" value={formatCurrency(pipelineValue)} />
+        <KpiCard label="Pipeline value" value={formatLakhCr(pipelineValue)} />
       </section>
+
+      <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
+        <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+          Pipeline:
+        </span>
+        {(["order_placed", "delivered", "lost"] as const).map((stage) => {
+          const count = leads.filter((l) => l.status === stage).length;
+          if (count === 0) return null;
+          const tone =
+            stage === "delivered"
+              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+              : stage === "lost"
+                ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300"
+                : "bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300";
+          return (
+            <span
+              key={stage}
+              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${tone}`}
+            >
+              {stage.replace("_", " ")} ({count})
+            </span>
+          );
+        })}
+      </div>
 
       <div className="mt-6 flex flex-wrap gap-3 text-sm">
         <span className="rounded-md border border-zinc-200 px-3 py-1.5 dark:border-zinc-800">
-          Delivered revenue <strong>{formatCurrency(revenue)}</strong>
+          Delivered revenue <strong>{formatLakhCr(revenue)}</strong>
         </span>
         <span className="rounded-md border border-zinc-200 px-3 py-1.5 dark:border-zinc-800">
           Last activity{" "}
@@ -117,6 +178,21 @@ export default async function RepDetail({
           )}
         </section>
       </div>
+
+      <section className="mt-6 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+        <Suspense fallback={null}>
+          <RepLeadsTable
+            leads={sortedLeads}
+            branchNames={branchNames}
+            repName={rep?.name ?? repId}
+            aging={agingMap}
+            deliveries={deliveryById}
+            repId={repId}
+            sortKey={sortKey}
+            sortDir={sortDir}
+          />
+        </Suspense>
+      </section>
 
       {aging.filter((a) => a.stale).length > 0 && (
         <section className="mt-6 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">

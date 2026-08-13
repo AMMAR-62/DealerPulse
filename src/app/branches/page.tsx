@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getDataset, buildIndex } from "@/lib/data/load";
 import { parseSearchParams, buildQueryString, updateParam } from "@/lib/store/filters";
 import { buildContext, computeBranchScorecard } from "@/lib/engine/metrics";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { formatLakhCr, formatPercent } from "@/lib/format";
 import BranchDetail from "./BranchDetail";
 
 export default async function BranchesPage({
@@ -70,7 +70,7 @@ export default async function BranchesPage({
               </div>
 
               <div className="mt-3 flex items-center justify-between text-xs text-zinc-400">
-                <span>Revenue {formatCurrency(s.revenue)}</span>
+                <span>Revenue {formatLakhCr(s.revenue)}</span>
                 <span>
                   {s.activeReps} reps · {s.lostLeads} lost
                 </span>

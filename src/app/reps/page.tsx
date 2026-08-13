@@ -3,7 +3,7 @@ import { getDataset, buildIndex } from "@/lib/data/load";
 import { parseSearchParams, buildQueryString, updateParam } from "@/lib/store/filters";
 import { buildContext, computeRepScorecard } from "@/lib/engine/metrics";
 import { computeAnomalies } from "@/lib/engine/anomalies";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { formatLakhCr, formatPercent } from "@/lib/format";
 import RepDetail from "./RepDetail";
 
 export default async function RepsPage({
@@ -84,7 +84,7 @@ export default async function RepsPage({
                   <td className="py-2 pr-3">{r.leads}</td>
                   <td className="py-2 pr-3 font-medium">{r.deliveredUnits}</td>
                   <td className="py-2 pr-3">{formatPercent(r.deliveryRate)}</td>
-                  <td className="py-2 pr-3">{formatCurrency(r.revenue)}</td>
+                  <td className="py-2 pr-3">{formatLakhCr(r.revenue)}</td>
                   <td className="py-2 pr-3 text-zinc-500">{r.lostLeads}</td>
                   <td className="py-2 pr-3">{r.avgDaysToDeliver.toFixed(1)}</td>
                   <td

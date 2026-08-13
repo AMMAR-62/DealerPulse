@@ -8,7 +8,7 @@ import {
 import { computeTopAnomalies } from "@/lib/engine/anomalies";
 import { getDataset, buildIndex } from "@/lib/data/load";
 import { parseSearchParams } from "@/lib/store/filters";
-import { formatCurrency, formatPercent, formatCompactCurrency } from "@/lib/format";
+import { formatLakhCr, formatPercent } from "@/lib/format";
 import { computeForecast } from "@/lib/engine/pipeline";
 import { generateSummary } from "@/lib/engine/summaries";
 import ForecastChart from "@/components/ForecastChart";
@@ -50,13 +50,13 @@ export default async function OverviewPage({
         <KpiCard label="Units delivered" value={kpis.deliveredUnits} />
         <KpiCard
           label="Pipeline (weighted)"
-          value={formatCompactCurrency(kpis.weightedPipelineValue)}
+          value={formatLakhCr(kpis.weightedPipelineValue)}
         />
         <KpiCard
           label="Avg days to deliver"
           value={kpis.avgDaysToDeliver.toFixed(1)}
         />
-        <KpiCard label="Revenue to date" value={formatCompactCurrency(kpis.revenueToDate)} />
+        <KpiCard label="Revenue to date" value={formatLakhCr(kpis.revenueToDate)} />
       </section>
 
       <section className="mt-6 grid gap-6 xl:grid-cols-3">
@@ -138,7 +138,7 @@ export default async function OverviewPage({
               value={`${kpis.deliveredVsTarget > 0 ? "+" : ""}${kpis.deliveredVsTarget}`}
               tone={kpis.deliveredVsTarget >= 0 ? "good" : "bad"}
             />
-            <Row label="Revenue vs target" value={formatCurrency(kpis.revenueVsTarget)} />
+            <Row label="Revenue vs target" value={formatLakhCr(kpis.revenueVsTarget)} />
           </div>
         </section>
       </div>
@@ -168,7 +168,7 @@ export default async function OverviewPage({
                   <td className="py-2 pr-3">{s.leads}</td>
                   <td className="py-2 pr-3">{s.deliveredUnits}</td>
                   <td className="py-2 pr-3">{formatPercent(s.deliveryRate)}</td>
-                  <td className="py-2 pr-3">{formatCurrency(s.revenue)}</td>
+                  <td className="py-2 pr-3">{formatLakhCr(s.revenue)}</td>
                   <td className="py-2 pr-3">{s.targetUnits}</td>
                   <td
                     className={`py-2 pr-3 ${s.deliveredVsTarget >= 0 ? "text-emerald-600" : "text-red-600"}`}

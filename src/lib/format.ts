@@ -17,6 +17,21 @@ export function formatCompactCurrency(value: number): string {
   return `₹${formatCompact(value)}`;
 }
 
+export function formatLakhCr(value: number): string {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? "−" : "";
+  if (abs >= 1e7) return `${sign}₹${trimZeros(value / 1e7)} Cr`;
+  if (abs >= 1e5) return `${sign}₹${trimZeros(value / 1e5)} L`;
+  return formatCurrency(value);
+}
+
+function trimZeros(value: number): string {
+  return value
+    .toFixed(2)
+    .replace(/\.?0+$/, "")
+    .replace(/\.$/, "");
+}
+
 export function formatPercent(value: number, digits = 1): string {
   if (!Number.isFinite(value)) return "—";
   return `${(value * 100).toFixed(digits)}%`;

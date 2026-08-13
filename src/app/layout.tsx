@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import MobileNav from "@/components/MobileNav";
 import FilterBar, { type FilterOptions } from "@/components/FilterBar";
 import { getDataset, buildIndex } from "@/lib/data/load";
 
@@ -56,8 +57,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
       </head>
-      <body className="flex min-h-full flex-col">
-        <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+      <body className="flex min-h-full flex-col pb-14 md:pb-0">
+        <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
           <div className="flex items-center justify-between gap-4 px-4 py-3">
             <div className="flex items-center gap-2">
               <span className="inline-block h-6 w-6 rounded bg-indigo-600" />
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           DealerPulse — synthetic dealership dataset · point-in-time analytics
           · Jun–Dec 2025
         </footer>
+        <MobileNav />
       </body>
     </html>
   );

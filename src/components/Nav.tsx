@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const LINKS: { href: string; label: string }[] = [
   { href: "/", label: "Overview" },
+  { href: "/analytics", label: "Analytics" },
   { href: "/branches", label: "Branches" },
   { href: "/reps", label: "Reps" },
   { href: "/leads", label: "Leads" },
@@ -13,6 +14,8 @@ const LINKS: { href: string; label: string }[] = [
   { href: "/ask", label: "AI Assistant" },
   { href: "/report", label: "Report" },
 ];
+
+export { LINKS };
 
 export default function Nav() {
   const pathname = usePathname();
