@@ -5,7 +5,7 @@ import { computeForecast } from "@/lib/engine/pipeline";
 import { computeAnomalies } from "@/lib/engine/anomalies";
 import { generateSummary } from "@/lib/engine/summaries";
 import { computeAlerts } from "@/lib/engine/alerts";
-import { formatCurrency, formatPercent, formatNumber } from "@/lib/format";
+import { formatLakhCr, formatPercent, formatNumber } from "@/lib/format";
 import PrintButton from "@/components/PrintButton";
 
 export default async function ReportPage({
@@ -54,7 +54,7 @@ export default async function ReportPage({
         <PrintButton />
       </div>
 
-      <div className="report-sheet space-y-6 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+      <div className="report-sheet space-y-6 rounded-lg border border-zinc-200 p-4 sm:p-6 dark:border-zinc-800">
         <header>
           <h1 className="text-xl font-semibold tracking-tight">DealerPulse</h1>
           <p className="text-sm text-zinc-500">
@@ -66,8 +66,8 @@ export default async function ReportPage({
           <h2 className="mb-2 text-sm font-semibold">Headline KPIs</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Kpi label="Delivered" value={formatNumber(kpis.deliveredUnits)} note={`${formatPercent(kpis.deliveryRate)} rate`} />
-            <Kpi label="Revenue to date" value={formatCurrency(kpis.revenueToDate)} note="delivered deals" />
-            <Kpi label="Open pipeline" value={formatNumber(kpis.openLeads)} note={`${formatCurrency(kpis.weightedPipelineValue)} weighted`} />
+            <Kpi label="Revenue to date" value={formatLakhCr(kpis.revenueToDate)} note="delivered deals" />
+            <Kpi label="Open pipeline" value={formatNumber(kpis.openLeads)} note={`${formatLakhCr(kpis.weightedPipelineValue)} weighted`} />
             <Kpi label="Plan attainment" value={formatPercent(kpis.deliveredUnits / (kpis.targetUnits || 1))} note={`${kpis.deliveredVsTarget >= 0 ? "+" : ""}${kpis.deliveredVsTarget} vs target`} />
           </div>
         </section>
@@ -86,24 +86,26 @@ export default async function ReportPage({
 
         <section>
           <h2 className="mb-2 text-sm font-semibold">Funnel snapshot</h2>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
-                <th className="py-1.5 pr-3">Stage</th>
-                <th className="py-1.5 pr-3">Current</th>
-                <th className="py-1.5">Reached</th>
-              </tr>
-            </thead>
-            <tbody>
-              {funnel.map((f) => (
-                <tr key={f.stage} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60">
-                  <td className="py-1.5 pr-3 capitalize">{f.stage.replace("_", " ")}</td>
-                  <td className="py-1.5 pr-3">{f.current}</td>
-                  <td className="py-1.5">{f.reached}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+                  <th className="py-1.5 pr-3">Stage</th>
+                  <th className="py-1.5 pr-3">Current</th>
+                  <th className="py-1.5">Reached</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {funnel.map((f) => (
+                  <tr key={f.stage} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60">
+                    <td className="py-1.5 pr-3 capitalize">{f.stage.replace("_", " ")}</td>
+                    <td className="py-1.5 pr-3">{f.current}</td>
+                    <td className="py-1.5">{f.reached}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section>

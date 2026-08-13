@@ -123,18 +123,18 @@ export default async function BranchDetail({
           { label: branch?.name ?? branchId },
         ]}
       />
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         <Link
           href={backHref}
           className="rounded-md border border-zinc-300 px-2.5 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
           ← All branches
         </Link>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+        <div className="min-w-0">
+          <h1 className="truncate text-2xl font-semibold tracking-tight">
             {branch?.name ?? branchId}
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="truncate text-sm text-zinc-500">
             {branch?.city} · as of {ctx.filters.asOf}
           </p>
         </div>

@@ -57,7 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
       </head>
-      <body className="flex min-h-full flex-col pb-14 md:pb-0">
+      <body className="flex min-h-full flex-col pb-14 lg:pb-0">
         <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
           <div className="flex items-center justify-between gap-4 px-4 py-3">
             <div className="flex items-center gap-2">
@@ -65,11 +65,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <span className="text-base font-semibold tracking-tight">
                 DealerPulse
               </span>
-              <span className="hidden text-xs text-zinc-400 sm:inline">
+              <span className="hidden text-xs text-zinc-400 xl:inline">
                 Dealership performance · Jun–Dec 2025
               </span>
             </div>
-            <Nav />
+            <div className="hidden min-w-0 lg:block">
+              <Nav />
+            </div>
           </div>
         </header>
         <Suspense fallback={null}>

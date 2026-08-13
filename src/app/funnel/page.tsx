@@ -71,28 +71,30 @@ export default async function FunnelPage({
 
         <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <h2 className="mb-3 text-sm font-semibold">Dwell time per stage</h2>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
-                <th className="py-2 pr-3">Stage</th>
-                <th className="py-2 pr-3">Leads</th>
-                <th className="py-2 pr-3">Avg days</th>
-                <th className="py-2 pr-3">Median</th>
-                <th className="py-2 pr-3">P90</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dwell.map((d) => (
-                <tr key={d.stage} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60">
-                  <td className="py-2 pr-3 capitalize">{d.stage.replace("_", " ")}</td>
-                  <td className="py-2 pr-3">{d.count}</td>
-                  <td className="py-2 pr-3">{d.avgDays.toFixed(1)}</td>
-                  <td className="py-2 pr-3">{d.medianDays.toFixed(1)}</td>
-                  <td className="py-2 pr-3">{d.p90Days.toFixed(1)}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+                  <th className="py-2 pr-3">Stage</th>
+                  <th className="py-2 pr-3">Leads</th>
+                  <th className="py-2 pr-3">Avg days</th>
+                  <th className="py-2 pr-3">Median</th>
+                  <th className="py-2 pr-3">P90</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {dwell.map((d) => (
+                  <tr key={d.stage} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60">
+                    <td className="py-2 pr-3 capitalize">{d.stage.replace("_", " ")}</td>
+                    <td className="py-2 pr-3">{d.count}</td>
+                    <td className="py-2 pr-3">{d.avgDays.toFixed(1)}</td>
+                    <td className="py-2 pr-3">{d.medianDays.toFixed(1)}</td>
+                    <td className="py-2 pr-3">{d.p90Days.toFixed(1)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <p className="mt-2 text-xs text-zinc-400">
             Dwell = days from entering a stage to leaving it (capped at as-of).
           </p>
@@ -134,28 +136,30 @@ export default async function FunnelPage({
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <h2 className="mb-3 text-sm font-semibold">Source-channel conversion</h2>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
-                <th className="py-2 pr-3">Source</th>
-                <th className="py-2 pr-3">Leads</th>
-                <th className="py-2 pr-3">Delivered %</th>
-                <th className="py-2 pr-3">Lost %</th>
-                <th className="py-2 pr-3">Avg days</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sources.map((s) => (
-                <tr key={s.source} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60">
-                  <td className="py-2 pr-3 font-medium">{s.source}</td>
-                  <td className="py-2 pr-3">{s.leads}</td>
-                  <td className="py-2 pr-3">{formatPercent(s.deliveredRate)}</td>
-                  <td className="py-2 pr-3">{formatPercent(s.lostRate)}</td>
-                  <td className="py-2 pr-3">{s.avgDaysToDeliver.toFixed(1)}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+                  <th className="py-2 pr-3">Source</th>
+                  <th className="py-2 pr-3">Leads</th>
+                  <th className="py-2 pr-3">Delivered %</th>
+                  <th className="py-2 pr-3">Lost %</th>
+                  <th className="py-2 pr-3">Avg days</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sources.map((s) => (
+                  <tr key={s.source} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60">
+                    <td className="py-2 pr-3 font-medium">{s.source}</td>
+                    <td className="py-2 pr-3">{s.leads}</td>
+                    <td className="py-2 pr-3">{formatPercent(s.deliveredRate)}</td>
+                    <td className="py-2 pr-3">{formatPercent(s.lostRate)}</td>
+                    <td className="py-2 pr-3">{s.avgDaysToDeliver.toFixed(1)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">

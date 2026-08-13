@@ -61,7 +61,7 @@ export default async function OverviewPage({
 
       <section className="mt-6 grid gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-sm font-semibold">Forecast & pace-to-target</h2>
             <p className="text-xs text-zinc-400">bars: target vs delivered · lines: cumulative</p>
           </div>
@@ -75,7 +75,7 @@ export default async function OverviewPage({
       </section>
 
       <section className="mt-6 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-semibold">Executive summary</h2>
           <span className="rounded bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800">
             deterministic rule engine · LLM-ready

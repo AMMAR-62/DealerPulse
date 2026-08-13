@@ -269,7 +269,7 @@ function MultiSelect({
         <div
           role="listbox"
           aria-label={label}
-          className="absolute left-0 z-50 mt-1 max-h-64 w-64 overflow-auto rounded-md border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
+          className="absolute left-0 z-50 mt-1 max-h-64 w-64 max-w-[calc(100vw-2rem)] overflow-auto rounded-md border border-zinc-200 bg-white p-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
         >
           <button
             type="button"

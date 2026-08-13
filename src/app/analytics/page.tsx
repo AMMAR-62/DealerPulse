@@ -59,15 +59,16 @@ export default async function AnalyticsPage({
             rows={funnelRows}
             asOfNote={`${ctx.leads.length} leads in scope`}
           />
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
-                <th className="py-2 pr-3">Stage</th>
-                <th className="py-2 pr-3 text-right">Reached</th>
-                <th className="py-2 pr-3 text-right">% of funnel</th>
-                <th className="py-2 pr-3 text-right">Drop-off</th>
-              </tr>
-            </thead>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+                  <th className="py-2 pr-3">Stage</th>
+                  <th className="py-2 pr-3 text-right">Reached</th>
+                  <th className="py-2 pr-3 text-right">% of funnel</th>
+                  <th className="py-2 pr-3 text-right">Drop-off</th>
+                </tr>
+              </thead>
             <tbody>
               {funnelRows.map((f) => {
                 const drop = f.conversion !== undefined ? 1 - f.conversion : 0;
@@ -102,6 +103,7 @@ export default async function AnalyticsPage({
             </tbody>
           </table>
         </div>
+        </div>
       </section>
 
       <section className="mt-6 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
@@ -111,36 +113,38 @@ export default async function AnalyticsPage({
         </p>
         <div className="grid gap-6 lg:grid-cols-2">
           <LostReasonPie data={lost} />
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
-                <th className="py-2 pr-3">Reason</th>
-                <th className="py-2 pr-3 text-right">Count</th>
-                <th className="py-2 pr-3 text-right">% of lost</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lost.map((r) => (
-                <tr
-                  key={r.reason}
-                  className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
-                >
-                  <td className="py-2 pr-3">{r.reason}</td>
-                  <td className="py-2 pr-3 text-right font-medium">{r.count}</td>
-                  <td className="py-2 pr-3 text-right text-zinc-500">
-                    {formatPercent(lostTotal ? r.count / lostTotal : 0)}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+                  <th className="py-2 pr-3">Reason</th>
+                  <th className="py-2 pr-3 text-right">Count</th>
+                  <th className="py-2 pr-3 text-right">% of lost</th>
                 </tr>
-              ))}
-              {lost.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="py-4 text-center text-sm text-zinc-400">
-                    No lost leads in scope.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {lost.map((r) => (
+                  <tr
+                    key={r.reason}
+                    className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
+                  >
+                    <td className="py-2 pr-3">{r.reason}</td>
+                    <td className="py-2 pr-3 text-right font-medium">{r.count}</td>
+                    <td className="py-2 pr-3 text-right text-zinc-500">
+                      {formatPercent(lostTotal ? r.count / lostTotal : 0)}
+                    </td>
+                  </tr>
+                ))}
+                {lost.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="py-4 text-center text-sm text-zinc-400">
+                      No lost leads in scope.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -171,7 +175,7 @@ export default async function AnalyticsPage({
         </div>
 
         <div className="mb-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div className="mb-3 flex items-center justify-between gap-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <span className="text-sm font-semibold">Delivery timeliness</span>
             <span className="shrink-0 text-xs text-zinc-500">
               {delays.onTime} on time · {delays.delayed} delayed
@@ -197,47 +201,49 @@ export default async function AnalyticsPage({
           </div>
         </div>
 
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
-              <th className="py-2 pr-3">Delay reason</th>
-              <th className="py-2 pr-3 text-right">Count</th>
-              <th className="py-2 pr-3 text-right">Share</th>
-              <th className="w-1/3 py-2 pr-3">Distribution</th>
-            </tr>
-          </thead>
-          <tbody>
-            {delays.breakdown.map((row) => (
-              <tr
-                key={row.reason}
-                className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
-              >
-                <td className="py-2 pr-3">{row.reason}</td>
-                <td className="py-2 pr-3 text-right font-medium">{row.count}</td>
-                <td className="py-2 pr-3 text-right">
-                  <span className="inline-block rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 ring-1 ring-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:ring-rose-800">
-                    {formatPercent(row.share)}
-                  </span>
-                </td>
-                <td className="py-2 pr-3">
-                  <div className="h-2.5 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
-                    <div
-                      className="h-full rounded-full bg-indigo-500"
-                      style={{ width: `${row.share * 100}%` }}
-                    />
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+                <th className="py-2 pr-3">Delay reason</th>
+                <th className="py-2 pr-3 text-right">Count</th>
+                <th className="py-2 pr-3 text-right">Share</th>
+                <th className="w-1/3 py-2 pr-3">Distribution</th>
               </tr>
-            ))}
-            {delays.breakdown.length === 0 && (
-              <tr>
-                <td colSpan={4} className="py-4 text-center text-sm text-zinc-400">
-                  No delayed deliveries in scope.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {delays.breakdown.map((row) => (
+                <tr
+                  key={row.reason}
+                  className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
+                >
+                  <td className="py-2 pr-3">{row.reason}</td>
+                  <td className="py-2 pr-3 text-right font-medium">{row.count}</td>
+                  <td className="py-2 pr-3 text-right">
+                    <span className="inline-block rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 ring-1 ring-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:ring-rose-800">
+                      {formatPercent(row.share)}
+                    </span>
+                  </td>
+                  <td className="py-2 pr-3">
+                    <div className="h-2.5 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
+                      <div
+                        className="h-full rounded-full bg-indigo-500"
+                        style={{ width: `${row.share * 100}%` }}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {delays.breakdown.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-4 text-center text-sm text-zinc-400">
+                    No delayed deliveries in scope.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="mt-6 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
@@ -247,15 +253,16 @@ export default async function AnalyticsPage({
         </p>
         <div className="grid gap-6 lg:grid-cols-2">
           <SourceBarChart data={sources} />
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
-                <th className="py-2 pr-3">Source</th>
-                <th className="py-2 pr-3 text-right">Total</th>
-                <th className="py-2 pr-3 text-right">Delivered</th>
-                <th className="py-2 pr-3 text-right">Conversion</th>
-              </tr>
-            </thead>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800">
+                  <th className="py-2 pr-3">Source</th>
+                  <th className="py-2 pr-3 text-right">Total</th>
+                  <th className="py-2 pr-3 text-right">Delivered</th>
+                  <th className="py-2 pr-3 text-right">Conversion</th>
+                </tr>
+              </thead>
             <tbody>
               {sources.map((s) => (
                 <tr
@@ -289,6 +296,7 @@ export default async function AnalyticsPage({
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </section>
     </div>

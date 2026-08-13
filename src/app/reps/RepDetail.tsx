@@ -85,16 +85,16 @@ export default async function RepDetail({
           { label: rep?.name ?? repId },
         ]}
       />
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         <Link
           href={backHref}
           className="rounded-md border border-zinc-300 px-2.5 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
           ← All reps
         </Link>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{rep?.name ?? repId}</h1>
-          <p className="text-sm text-zinc-500">
+        <div className="min-w-0">
+          <h1 className="truncate text-2xl font-semibold tracking-tight">{rep?.name ?? repId}</h1>
+          <p className="truncate text-sm text-zinc-500">
             {index.branchesById.get(rep?.branch_id ?? "")?.name ?? rep?.branch_id} ·{" "}
             {rep?.role === "branch_manager" ? "Branch manager" : "Sales officer"}
           </p>
